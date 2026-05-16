@@ -1,6 +1,7 @@
-use ring::{
-	rand::SystemRandom,
-	signature::{self, EcdsaKeyPair},
+use p256::{
+	ecdsa::SigningKey as EcdsaSigningKey,
+	elliptic_curve::rand_core::OsRng,
+	pkcs8::EncodePrivateKey,
 };
 use serde::{Deserialize, Serialize};
 use tuwunel_core::{Result, at, err, info, utils};
@@ -45,11 +46,11 @@ pub(super) fn init_signing_key(db: &Data) -> Result<SigningKey> {
 }
 
 fn generate_signing_key() -> Result<SigningKey> {
-	let rng = SystemRandom::new();
-	let alg = &signature::ECDSA_P256_SHA256_FIXED_SIGNING;
 	let key_id = utils::random_string(16);
-	let pkcs8 = EcdsaKeyPair::generate_pkcs8(alg, &rng)
+	let signing_key = EcdsaSigningKey::random(&mut OsRng);
+	let pkcs8 = signing_key
+		.to_pkcs8_der()
 		.map_err(|e| err!(error!("Failed to generate ECDSA key: {e}")))?;
 
-	Ok(SigningKey { key_der: pkcs8.as_ref().to_vec(), key_id })
+	Ok(SigningKey { key_der: pkcs8.as_bytes().to_vec(), key_id })
 }

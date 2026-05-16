@@ -1,9 +1,6 @@
-use ring::{
-	digest,
-	digest::{Context, SHA256, SHA256_OUTPUT_LEN},
-};
+use sha2::{Digest as _, Sha256};
 
-pub type Digest = [u8; SHA256_OUTPUT_LEN];
+pub type Digest = [u8; 32];
 
 /// Sha256 hash (input gather joined by 0xFF bytes)
 #[must_use]
@@ -13,7 +10,7 @@ where
 	I: Iterator<Item = T> + 'a,
 	T: AsRef<[u8]> + 'a,
 {
-	let mut ctx = Context::new(&SHA256);
+	let mut ctx = Sha256::new();
 	if let Some(input) = inputs.next() {
 		ctx.update(input.as_ref());
 		for input in inputs {
@@ -22,8 +19,8 @@ where
 		}
 	}
 
-	ctx.finish()
-		.as_ref()
+	ctx.finalize()
+		.as_slice()
 		.try_into()
 		.expect("failed to return Digest buffer")
 }
@@ -37,12 +34,12 @@ where
 	T: AsRef<[u8]> + 'a,
 {
 	inputs
-		.fold(Context::new(&SHA256), |mut ctx, input| {
+		.fold(Sha256::new(), |mut ctx, input| {
 			ctx.update(input.as_ref());
 			ctx
 		})
-		.finish()
-		.as_ref()
+		.finalize()
+		.as_slice()
 		.try_into()
 		.expect("failed to return Digest buffer")
 }
@@ -55,8 +52,8 @@ pub fn hash<T>(input: T) -> Digest
 where
 	T: AsRef<[u8]>,
 {
-	digest::digest(&SHA256, input.as_ref())
-		.as_ref()
+	Sha256::digest(input.as_ref())
+		.as_slice()
 		.try_into()
 		.expect("failed to return Digest buffer")
 }

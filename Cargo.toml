@@ -244,7 +244,7 @@ rev = "93795449913f65ab533b7fa482333eef63fc3ae0"
 version = "10.3"
 default-features = false
 features = [
-	"aws_lc_rs",
+	"rust_crypto",
 	"ed25519-dalek",
 	"hmac",
 	"sha2",
@@ -303,9 +303,7 @@ version = "0.2"
 version = "0.13"
 default-features = false
 features = [
-	"aws",
 	"fs",
-	"tls-webpki-roots",
 ]
 
 [workspace.dependencies.opentelemetry]
@@ -339,13 +337,19 @@ features = [
 	"charset",
 	"http2",
 	"json",
-	"rustls",
+	"rustls-no-provider",
 	"socks",
 ]
 
-[workspace.dependencies.ring]
-version = "0.17"
+
+[workspace.dependencies.p256]
+version = "0.13"
 default-features = false
+features = [
+	"ecdsa",
+	"pkcs8",
+	"std",
+]
 
 [workspace.dependencies.ruma]
 git = "https://github.com/matrix-construct/ruma"
@@ -361,7 +365,6 @@ features = [
     "markdown",
     "push-gateway-api-c",
     "rand",
-    "ring-compat",
     "unstable-msc2448",
     "unstable-msc2666",
     "unstable-msc2815",
@@ -394,7 +397,12 @@ features = [
 [workspace.dependencies.rustls]
 version = "0.23"
 default-features = false
-features = ["aws_lc_rs", "logging", "tls12", "prefer-post-quantum"]
+features = ["logging", "tls12"]
+
+[workspace.dependencies.rustls-rustcrypto]
+version = "0.0.2-alpha"
+default-features = false
+features = ["std", "tls12", "zeroize"]
 
 [workspace.dependencies.rustyline-async]
 version = "0.4.6"
@@ -405,13 +413,9 @@ git = "https://github.com/matrix-construct/rust-rocksdb"
 rev = "c11395350bc1f2090a0152f2d15c8c5847821eba"
 default-features = false
 features = [
-	"bzip2",
 	"lto",
-	"lz4",
 	"multi-threaded-cf",
 	"serde1",
-	"zstd",
-	"zstd-static-linking-only",
 ]
 
 [workspace.dependencies.sanitize-filename]

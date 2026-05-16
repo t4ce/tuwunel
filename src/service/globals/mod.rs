@@ -108,10 +108,10 @@ impl Service {
 
 	pub fn init_rustls_provider(&self) -> Result {
 		if rustls::crypto::CryptoProvider::get_default().is_none() {
-			rustls::crypto::aws_lc_rs::default_provider()
+			rustls_rustcrypto::provider()
 				.install_default()
 				.map_err(|_provider| {
-					err!(error!("Error initialising aws_lc_rs rustls crypto backend"))
+					err!(error!("Error initialising RustCrypto rustls crypto backend"))
 				})
 		} else {
 			Ok(())
