@@ -1,0 +1,8 @@
+---
+source: src/main/tests/listener_init_err.rs
+description: Listener Initialization Err
+expression: result
+---
+Err(
+    I/O error: No such file or directory (os error 2),
+)
